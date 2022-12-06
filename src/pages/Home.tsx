@@ -17,7 +17,7 @@ export const HomePage = () => {
   );
 
   const onChangeSearch = (value: string) => {
-    page !== 1 && setPage(1);
+    page !== 1 && value.length > 2 && setPage(1);
     setSearchValue(value);
   };
 

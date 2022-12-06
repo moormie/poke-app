@@ -21,6 +21,8 @@ export const convertFromPokemonResponse = (
     name: data.name,
     imgUrl:
       data.sprites.other?.["official-artwork"].front_default ??
+      data.sprites.other?.home.front_default ??
+      data.sprites.other?.home.front_shiny ??
       data.sprites.front_default,
     species: data.species.name,
     weightInKg: data.weight / 10,

@@ -19,6 +19,11 @@ interface PokemonData {
   error?: string;
 }
 
+interface CachedData {
+  lastPage: number;
+  pokemonList: Pokemon[];
+}
+
 export const usePokemonList = (page: number, searchValue: string) => {
   const [state, setState] = useState<PokemonData>({
     loading: true,
@@ -38,10 +43,10 @@ export const usePokemonList = (page: number, searchValue: string) => {
       const isSearch = searchValue.length > 2;
       const cachedData = !isSearch ? getCachedData(page) : undefined;
 
-      if (cachedData && cachedData.cachedList.length > 0) {
+      if (cachedData && cachedData.pokemonList.length > 0) {
         setState({
           loading: false,
-          pokemonList: cachedData.cachedList,
+          pokemonList: cachedData.pokemonList,
           lastPage: cachedData.lastPage,
         });
       } else {
@@ -88,12 +93,12 @@ export const usePokemonList = (page: number, searchValue: string) => {
   return state;
 };
 
-export const getCachedData = (page: number) => {
+export const getCachedData = (page: number): CachedData => {
   const data = localStorage.getItem(POKEMON_CACHE + page);
   const lastPage = localStorage.getItem(POKEMON_CACHE_LAST_PAGE);
   return data
-    ? { cachedList: JSON.parse(data) as Pokemon[], lastPage: Number(lastPage) }
-    : { cachedList: [], lastPage: 1 };
+    ? { pokemonList: JSON.parse(data) as Pokemon[], lastPage: Number(lastPage) }
+    : { pokemonList: [], lastPage: 1 };
 };
 
 export const getFetchedData = async (responseResults: NamedAPIResource[]) => {

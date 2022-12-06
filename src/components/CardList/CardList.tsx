@@ -11,7 +11,7 @@ interface Props {
 export const CardList: FC<Props> = ({ pokemonList, selectPokemon }) => {
   return (
     <div className="pokemon-list-container">
-      {pokemonList.length === 0 && <div>No result...</div>}{" "}
+      {pokemonList.length === 0 && <div>No result...</div>}
       {pokemonList.map((pokemon) => (
         <Card
           key={pokemon.name}

@@ -37,7 +37,7 @@ export const Details: FC<Props> = ({ pokemon }) => {
         <div className="Details-list-container">
           {types.map((t, index) => (
             <div key={t.name + index} className="Details-chip">
-              {t.name}{" "}
+              {t.name}
             </div>
           ))}
         </div>
