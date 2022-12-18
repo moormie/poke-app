@@ -1,4 +1,6 @@
 import "../App.css";
+import debounce from "lodash.debounce";
+import { useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { usePokemonList } from "../hooks/usePokemonList";
 import { Loading } from "../components/Loading/Loading";
@@ -17,13 +19,22 @@ export const HomePage = () => {
     params.search ?? ""
   );
 
-  const onChangeSearch = (value: string) => {
-    if (value.length > 2) {
-      setParams({ page: 1, search: value });
-    } else if (value.length === 0) {
-      setParams({ page: 1 });
-    }
-  };
+  const debouncedSearch = useMemo(() => {
+    const onChangeSearch = (value: string) => {
+      if (value.length > 2) {
+        setParams({ page: 1, search: value });
+      } else if (value.length === 0) {
+        setParams({ page: 1 });
+      }
+    };
+    return debounce(onChangeSearch, 500);
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      debouncedSearch.cancel();
+    };
+  });
 
   const onNext = () => {
     setParams({ page: page + 1, search: search });
@@ -45,7 +56,7 @@ export const HomePage = () => {
           className="Home-page-search-input"
           placeholder="Search Pokémon"
           type="text"
-          onChange={(e) => onChangeSearch(e.target.value)}
+          onChange={(e) => debouncedSearch(e.target.value)}
         />
       </div>
       <div className="page-container">

@@ -13,13 +13,13 @@ export const useCustomParams = () => {
   const searchParam = searchParams.get("search");
 
   useEffect(() => {
-   if(pageParam < 1) {
-     setSearchParams(
-       createSearchParams({
-         page: "1",
-       })
-     );
-   }
+    if (pageParam < 1) {
+      setSearchParams(
+        createSearchParams({
+          page: "1",
+        })
+      );
+    }
   }, [pageParam, setSearchParams]);
 
   return {
