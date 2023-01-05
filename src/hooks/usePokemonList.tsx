@@ -62,11 +62,7 @@ export const usePokemonList = (page: number, searchValue: string) => {
         const convertedList = await getFetchedData(limitedList);
 
         if (!isSearch) {
-          localStorage.setItem(
-            POKEMON_CACHE + page,
-            JSON.stringify(convertedList)
-          );
-          localStorage.setItem(POKEMON_CACHE_LAST_PAGE, lastPage.toString());
+          saveToLocal(page, convertedList, lastPage);
         }
 
         setState({
@@ -93,7 +89,7 @@ export const usePokemonList = (page: number, searchValue: string) => {
   return state;
 };
 
-export const getCachedData = (page: number): CachedData => {
+const getCachedData = (page: number): CachedData => {
   const data = localStorage.getItem(POKEMON_CACHE + page);
   const lastPage = localStorage.getItem(POKEMON_CACHE_LAST_PAGE);
   return data
@@ -101,7 +97,7 @@ export const getCachedData = (page: number): CachedData => {
     : { pokemonList: [], lastPage: 1 };
 };
 
-export const getFetchedData = async (responseResults: NamedAPIResource[]) => {
+const getFetchedData = async (responseResults: NamedAPIResource[]) => {
   const dataList: PokemonResponseData[] = [];
   await Promise.all(
     responseResults.map((result) =>
@@ -112,4 +108,9 @@ export const getFetchedData = async (responseResults: NamedAPIResource[]) => {
   );
 
   return convertFromPokemonListResponse(dataList);
+};
+
+const saveToLocal = (page: number, list: Pokemon[], lastPage: number) => {
+  localStorage.setItem(POKEMON_CACHE + page, JSON.stringify(list));
+  localStorage.setItem(POKEMON_CACHE_LAST_PAGE, lastPage.toString());
 };

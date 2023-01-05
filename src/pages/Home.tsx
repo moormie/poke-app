@@ -1,36 +1,51 @@
 import "../App.css";
+import debounce from "lodash.debounce";
+import { useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
 import { usePokemonList } from "../hooks/usePokemonList";
 import { Loading } from "../components/Loading/Loading";
 import { CardList } from "../components/CardList/CardList";
+import { useCustomParams } from "../hooks/useCustomParams";
+import { POKEMON_URL } from "../constants/contsants";
 
 export const HomePage = () => {
   const navigate = useNavigate();
 
-  const [searchValue, setSearchValue] = useState("");
-  const [page, setPage] = useState(1);
+  const { params, setParams } = useCustomParams();
+  const { page, search } = params;
 
   const { loading, pokemonList, lastPage, error } = usePokemonList(
-    page,
-    searchValue
+    params.page,
+    params.search ?? ""
   );
 
-  const onChangeSearch = (value: string) => {
-    page !== 1 && value.length > 2 && setPage(1);
-    setSearchValue(value);
-  };
+  const debouncedSearch = useMemo(() => {
+    const onChangeSearch = (value: string) => {
+      if (value.length > 2) {
+        setParams({ page: 1, search: value });
+      } else if (value.length === 0) {
+        setParams({ page: 1 });
+      }
+    };
+    return debounce(onChangeSearch, 500);
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      debouncedSearch.cancel();
+    };
+  });
 
   const onNext = () => {
-    setPage((prevState) => prevState + 1);
+    setParams({ page: page + 1, search: search });
   };
 
   const onPrev = () => {
-    page > 0 && setPage((prevState) => prevState - 1);
+    page > 0 && setParams({ page: page - 1, search: search });
   };
 
   const selectPokemon = (name: string) => {
-    navigate("/details/" + name);
+    navigate(`${POKEMON_URL}/${name}`);
   };
 
   return (
@@ -41,7 +56,7 @@ export const HomePage = () => {
           className="Home-page-search-input"
           placeholder="Search Pokémon"
           type="text"
-          onChange={(e) => onChangeSearch(e.target.value)}
+          onChange={(e) => debouncedSearch(e.target.value)}
         />
       </div>
       <div className="page-container">
